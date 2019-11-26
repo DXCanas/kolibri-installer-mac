@@ -22,4 +22,27 @@ src/kolibri: whl/kolibri%.whl
 project_info.json: project_info.template src/kolibri scripts/create_project_info.py
 	python ./scripts/create_project_info.py
 
-# kolibri%.dmg: VERSION
+.env: 
+	echo "PYTHONPATH=${PWD}/src/kolibri/dist" > .env
+
+dist/osx/Kolibri.app: project_info.json .env
+	pipenv sync --dev 
+
+ifdef BUILDKITE
+	mkdir -p logs
+	pipenv run pew build &> logs/full_app_build_log.txt
+	buildkite-agent artifact upload logs/full_app_build_log.txt
+else
+	pipenv run pew build
+endif
+
+package/osx/kolibri%.dmg: dist/osx/Kolibri.app
+	# Clear dist so that the dmg is in the same dir as the rest of the packages
+	# dist is may exist because of buildkite-agent download behavior
+	pipenv run pew package
+
+ifdef BUILDKITE
+	rm -r dist/*
+	mv package/osx/kolibri*.dmg dist/
+	buildkite-agent artifact upload "dist/kolibri*.dmg" --job $(buildkite-agent meta-data get triggered_from_job_id --default $BUILDKITE_JOB_ID)
+endif
