@@ -1,6 +1,6 @@
 {
   "name": "Kolibri",
-  "version": "${apk_version}",
+  "version": "${mac_app_version}",
   "build_number": "${build_number}",
   "identifier": "org.learningequality.Kolibri",
   "requirements": {"android": ["python2","pyjnius","genericndkbuild", "sqlite3", "cryptography", "pyopenssl", "openssl", "six"]},
