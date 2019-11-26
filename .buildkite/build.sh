@@ -3,16 +3,17 @@
 # Setting for debug purposes
 set -exuo pipefail
 
+mkdir -p whl
 
 # Allows for building directly from pipeline or trigger
 if [[ $BUILDKITE_TRIGGERED_FROM_BUILD_ID ]]
 then
-  echo "--- Downloading from triggered build"
+  echo "--- Downloading whl from triggered build"
   buildkite-agent artifact download "dist/*.whl" . --build $BUILDKITE_TRIGGERED_FROM_BUILD_ID
+  mv dist/*.whl whl/
 else
-  echo "--- Downloading from pip"
-  mkdir -p dist
-  pip3 download -d ./dist kolibri
+  echo "--- Downloading whl from pip"
+  pip3 download -d ./whl kolibri
 fi
 
 echo "--- Preparing Environment"
@@ -20,7 +21,9 @@ echo "--- Preparing Environment"
 echo "Unpacking whl"
 # Duped from Android installer's makefile
 # Only unpacks kolibri, ignores useless c extensions to reduce size
-unzip -q "dist/kolibri*.whl" "kolibri/*" -x "kolibri/dist/cext*" -d src/
+unzip -q "whl/kolibri*.whl" "kolibri/*" -x "kolibri/dist/cext*" -d src/
+
+# Removing vendored enum package that we don't need
 rm -rf ./src/kolibri/dist/enum
 
 
@@ -44,8 +47,8 @@ pipenv run pew package
 
 echo "--- Uploading"
 
-
 # Clear dist so that the dmg is in the same dir as the rest of the packages
+# dist is may exist because of buildkite-agent download behavior
 rm -r dist/* && mv package/osx/kolibri*.dmg dist/
 
 # Environment var doesn't exist my default, so we have to manually pass it.
