@@ -32,7 +32,7 @@ dist/osx/Kolibri.app: project_info.json .env
 	@echo "--- Building app"
 ifdef BUILDKITE
 	mkdir -p logs
-	pipenv run pew build &> logs/full_app_build_log.txt
+	pipenv run pew build | tee logs/full_app_build_log.txt
 
 	@echo "Uploading logs"
 	buildkite-agent artifact upload logs/full_app_build_log.txt
