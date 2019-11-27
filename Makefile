@@ -3,7 +3,7 @@
 clean:
 	rm -rf whl dist package src/kolibri project_info.json .env
 
-whl/kolibri%.whl:
+whl/kolibri*.whl:
 	mkdir -p whl
 	# Allows for building directly from pipeline or trigger
 ifdef BUILDKITE_TRIGGERED_FROM_BUILD_ID
@@ -15,7 +15,7 @@ else
 	pip3 download -d ./whl kolibri
 endif
 
-src/kolibri: whl/kolibri%.whl
+src/kolibri: whl/kolibri*.whl
 	@echo "--- Unpacking whl"
 
 	# Duped from Android installer's makefile
@@ -44,7 +44,7 @@ else
 	pipenv run pew build
 endif
 
-package/osx/kolibri%.dmg: dist/osx/Kolibri.app
+package/osx/kolibri*.dmg: dist/osx/Kolibri.app
 	@echo "--- :mac: Packaging .dmg"
 	pipenv run pew package
 
@@ -59,4 +59,4 @@ ifdef BUILDKITE
 	buildkite-agent artifact upload "dist/kolibri*.dmg" --job $(buildkite-agent meta-data get triggered_from_job_id --default $BUILDKITE_JOB_ID)
 endif
 
-macapp: package/osx/kolibri%.dmg
+macapp: package/osx/kolibri*.dmg
