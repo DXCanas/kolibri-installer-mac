@@ -1,5 +1,5 @@
 steps:
   - label: "Build Dev Package"
-    command: ".buildkite/build.sh"
+    command: "make macapp"
     agents:
       queue: "macos"
