@@ -22,10 +22,6 @@ src/kolibri: whl/kolibri*.whl
 	# Only unpacks kolibri, ignores useless c extensions to reduce size
 	unzip -q "whl/kolibri*.whl" "kolibri/*" -x "kolibri/dist/cext*" "kolibri/dist/enum" -d src/
 
-# Generate the project info file
-project_info.json: project_info.template src/kolibri scripts/create_project_info.py
-	python ./scripts/create_project_info.py
-
 .env: 
 	echo "PYTHONPATH=$$PWD/src/kolibri/dist" > .env
 
