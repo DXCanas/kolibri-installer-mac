@@ -48,7 +48,7 @@ ifdef BUILDKITE
 	# Clear dist so that the dmg is in the same dir as the rest of the packages
 	# dist is may exist because of buildkite-agent download behavior
 	rm -r dist/*
-	mv package/osx/kolibri*.dmg dist/
+	mv package/osx/kolibri*.dmg dist/kolibri-$$(more src/kolibri/VERSION)-$$(git rev-parse --short HEAD).dmg
 
 	@echo "--- Uploading .dmg"
 
