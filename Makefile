@@ -27,7 +27,7 @@ project_info.json: project_info.template src/kolibri scripts/create_project_info
 	python ./scripts/create_project_info.py
 
 .env: 
-	echo "PYTHONPATH=${PWD}/src/kolibri/dist" > .env
+	echo "PYTHONPATH=$$PWD/src/kolibri/dist" > .env
 
 dist/osx/Kolibri.app: project_info.json .env
 	@echo "--- Downloading Python deps"
@@ -55,8 +55,9 @@ ifdef BUILDKITE
 	mv package/osx/kolibri*.dmg dist/
 
 	@echo "--- Uploading .dmg"
+
 	# Environment var doesn't exist my default, so we have to manually pass it.
-	buildkite-agent artifact upload "dist/kolibri*.dmg" --job $(buildkite-agent meta-data get triggered_from_job_id --default $BUILDKITE_JOB_ID)
+	buildkite-agent artifact upload "dist/kolibri*.dmg" --job $$(buildkite-agent meta-data get triggered_from_job_id --default $$BUILDKITE_JOB_ID)
 endif
 
 macapp: package/osx/kolibri*.dmg
